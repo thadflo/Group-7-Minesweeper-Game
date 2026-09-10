@@ -37,5 +37,5 @@ UIWindow::UIWindow(){
 UIWindow::~UIWindow(){}
 
 void UIWindow::on_button_clicked(int id){
-  std::cout << "Hello World" << std::endl;
+  m_input_handler.handle_tile_click(id, ClickType::LEFT);
 }

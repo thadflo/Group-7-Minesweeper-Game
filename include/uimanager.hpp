@@ -2,6 +2,7 @@
 #define UIMANAGER_H
 
 #include <gtkmm.h>
+#include "input_handler.hpp"
 
 class UIWindow : public Gtk::Window{
     public:
@@ -16,6 +17,7 @@ class UIWindow : public Gtk::Window{
     //Widgets
     Gtk::Label m_label{"Fancy Minesweeper Wow"};
     Gtk::Button m_buttons[100];
+    InputHandler m_input_handler{10};
 
     //Signal handler
     void on_button_clicked(int id);
