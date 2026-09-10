@@ -2,7 +2,7 @@
 # Only making this file to make sure to add the proper include folder
 
 CC := g++
-CLFAGS := #we can decide what CFLAGS we want I guess
+CFLAGS := $(shell pkg-config --cflags --libs gtkmm-4.0)
 CPPFLAGS := -Iinclude
 
 OUT = cppsweeper
