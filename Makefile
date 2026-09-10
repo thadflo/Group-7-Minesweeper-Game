@@ -2,7 +2,8 @@
 # Only making this file to make sure to add the proper include folder
 
 CC := g++
-CFLAGS := $(shell pkg-config --cflags --libs gtkmm-4.0)
+CFLAGS := $(shell pkg-config --cflags gtkmm-4.0)
+LDFLAGS := $(shell pkg-config --libs gtkmm-4.0)
 CPPFLAGS := -Iinclude
 
 OUT = cppsweeper
@@ -15,3 +16,5 @@ all: $(OUT)
 $(OUT): $(OBJ_SRCS)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $(OUT) $(OBJ_SRCS)
 
+%.o: %.cpp
+	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c $(LDFLAGS)
