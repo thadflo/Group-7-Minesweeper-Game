@@ -4,7 +4,7 @@ enum TileState {
     UNCOVERED
 };
 
-class tile
+class Tile
 {
     public:
         int tileValue; //0 for blank, 9 for bomb
