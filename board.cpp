@@ -32,6 +32,23 @@ tile** generateBlankBoard() {
     return board;
 }
 
+void markTiles(tile** board, int bombX, int bombY) {
+    tile& bombTile = board[bombY][bombX];
+    bombTile.tileValue = 9;
+
+    for(int i = -1; i <= 1; i++) {
+        for(int j = -1; j <= 1; j++) {
+            if((bombX + i >= 0) && (bombX + i < BOARD_SIZE)
+            && (bombY + j >= 0) && (bombX + j < BOARD_SIZE)) {
+                tile& updateTile = board[bombY + j][bombX + i];
+                if(updateTile.tileValue != 9) {
+                    updateTile.tileValue += 1;
+                }
+            }
+        }
+    }
+}
+
 tile** generateBombs(tile** board, int bombs, int initialX, int initialY) {
     int bombCount = bombs;
     tile** bombBoard = board;
@@ -48,7 +65,7 @@ tile** generateBombs(tile** board, int bombs, int initialX, int initialY) {
         if (canaditeTile.tileValue != 9 && 
             (canaditeX < minSafeX || canaditeX > maxSafeX || 
             canaditeY < minSafeY || canaditeY > maxSafeY)) {
-                bombBoard[canaditeY][canaditeX].tileValue = 9;
+                markTiles(bombBoard, canaditeX, canaditeY);
                 bombCount -= 1;
         }
     }
