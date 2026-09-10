@@ -1,20 +1,24 @@
 #ifndef UIMANAGER_H
 #define UIMANAGER_H
 
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
+#include <gtkmm.h>
 
 class UIWindow : public Gtk::Window{
     public:
-    UIWindow();
-    ~UIWindow() override;
+        UIWindow();
+        ~UIWindow() override;
 
     protected:
-    //Signal handlers:
-    void on_button_clicked();
+    //Layout
+    Gtk::Box m_main_box{Gtk::Orientation::VERTICAL, 10};
+    Gtk::Grid m_button_grid;
 
-    //Member widgets:
-    Gtk::Button m_button;
+    //Widgets
+    Gtk::Label m_label{"Fancy Minesweeper Wow"};
+    Gtk::Button m_buttons[100];
+
+    //Signal handler
+    void on_button_clicked(int id);
 };
 
 #endif // UIMANAGER_H
