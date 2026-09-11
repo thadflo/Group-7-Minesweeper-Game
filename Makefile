@@ -1,20 +1,25 @@
 
-# Only making this file to make sure to add the proper include folder
-
-CC := g++
-CFLAGS := $(shell pkg-config --cflags gtkmm-4.0)
-LDFLAGS := $(shell pkg-config --libs gtkmm-4.0)
+CXX := g++
+CXXFLAGS := $(shell pkg-config --cflags gtkmm-4.0)
 CPPFLAGS := -Iinclude
+LDLIBS := $(shell pkg-config --libs gtkmm-4.0)
 
-OUT = cppsweeper
-#take every c++ file in src
-CPP_SRCS = $(wildcard src/*.cpp)
-OBJ_SRCS := $(CPP_SRCS:.cpp=.o)
+TARGET := cppsweeper
+SOURCES := $(wildcard src/*.cpp)
+OBJECTS := $(SOURCES:.cpp=.o)
 
-all: $(OUT)
-#feel free to make ANY changes to the makefile
-$(OUT): $(OBJ_SRCS)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $(OUT) $(OBJ_SRCS)
+.PHONY: all clean run
 
-%.o: %.cpp
-	$(CC) $(CFLAGS) $(CPPFLAGS) $< -c $(LDFLAGS)
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ $(LDLIBS)
+
+src/%.o: src/%.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(TARGET) $(OBJECTS) *.o
+
+run: $(TARGET)
+	./$(TARGET)
