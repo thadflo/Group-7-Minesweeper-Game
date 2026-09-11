@@ -1,6 +1,6 @@
 // for std::uint8_t
 #include <cstdint>
-#define BOARD_SIZE 10
+constexpr std::uint8_t board_size = 10;
 
 class Tile {
 	public:
@@ -13,7 +13,7 @@ class Tile {
 
 class Board {
 	private:
-		Tile tiles[BOARD_SIZE][BOARD_SIZE] = {0};
+		Tile tiles[board_size][board_size] = {0};
 		void generate_tile_values(std::uint8_t x, std::uint8_t y);
 
 	public:
