@@ -10,6 +10,13 @@ constexpr std::uint8_t max(std::uint8_t a, std::uint8_t b) {
 	return a > b ? a : b;
 }
 
+constexpr bool in_3_by_3_range(std::uint8_t x, std::uint8_t y, std::uint8_t new_x, std::uint8_t new_y) {
+	bool below = new_y <= min(y + 1, board_size), above = new_y >= min(y - 1, y);
+	bool left = new_x <= min(x + 1, board_size), right = new_x >= min(x - 1, x);
+	return (below && above) && (left && right);
+}
+
+
 
 // Board::Board(std::size_t board_size)
 // Creates uninstantiated board
@@ -35,7 +42,7 @@ void Board::initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y) {
 	while(nbombs > 0) {
 		std::uint8_t rand_x = rand() % board_size;
 		std::uint8_t rand_y = rand() % board_size;
-		if(rand_x == x && rand_y == y)
+		if(in_3_by_3_range(x, y, rand_x, rand_y))
 			continue;
 		Tile tile = this->tiles[rand_x][rand_y];
 		if(tile.tile_value == 9)
