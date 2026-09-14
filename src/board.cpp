@@ -16,17 +16,17 @@ constexpr bool in_3_by_3_range(std::uint8_t x, std::uint8_t y, std::uint8_t new_
 // Board::generate_tile_values
 // Used by Board::Iniitialize
 // Adds the +1 to all surrounding non-bomb tiles
-void Board::generate_tile_values(std::uint8_t x, std::uint8_t y) {
+void Board::update_tile_values(std::uint8_t x, std::uint8_t y) {
 	// uint8_t is unsigned so if x/y = 0 x-1 will be bigger than x :)
-	std::uint8_t i = min(x - 1, x), j = min(y - 1, y);
+	std::uint8_t i = min(x - 1, x), initial_j = min(y - 1, y);
 	constexpr std::uint8_t max_value = board_size - 1;
 	std::uint8_t fin_i = min(max_value, x + 1), fin_j = min(max_value, y + 1);
 	for(;i <= fin_i; i++) {
-		for(;j <= fin_j;j++) {
+		for(int j = initial_j;j <= fin_j;j++) {
 			if(i == x && j == y)
 				continue;
-			if(this->tiles[i][j].tile_value == 9)
-				this->tiles[x][y].tile_value++;
+			if(this->tiles[i][j].tile_value != 9)
+				this->tiles[i][j].tile_value++;
 		}
 	}
 }
@@ -43,7 +43,7 @@ void Board::initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y) {
 		if(tile.tile_value == 9)
 			continue;
 		this->tiles[rand_x][rand_y].tile_value = 9;
-		this->generate_tile_values(rand_x, rand_y);
+		this->update_tile_values(rand_x, rand_y);
 		nbombs--;
 	}
 }

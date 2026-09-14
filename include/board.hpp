@@ -14,7 +14,7 @@ class Tile {
 class Board {
 	private:
 		Tile tiles[board_size][board_size] = {0};
-		void generate_tile_values(std::uint8_t x, std::uint8_t y);
+		void update_tile_values(std::uint8_t x, std::uint8_t y);
 
 	public:
 		// Board Constructor
