@@ -47,3 +47,21 @@ void Board::initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y) {
 		nbombs--;
 	}
 }
+
+// Board::is_bomb, returns true if a tile is a bomb
+// It is the job of the function caller to ensure input is within the range
+bool Board::is_bomb(std::uint8_t x, std::uint8_t y) {
+	return this->tiles[y][x].tile_value == 9;
+}
+
+// Board::get_state returns the state of the tile
+// It is the job of the function caller to ensure input is within the range
+Tile::TileState Board::get_state(std::uint8_t x, std::uint8_t y) {
+	return this->tiles[y][x].tile_state;
+}
+
+
+bool Board::uncover(std::uint8_t x, std::uint8_t y) {
+	this->tiles[y][x].tile_state = Tile::TileState::Uncovered;
+	return is_bomb(x, y);
+}
