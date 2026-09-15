@@ -34,7 +34,7 @@ void Board::update_tile_values(std::uint8_t x, std::uint8_t y) {
 // Board::initialize
 // Places bombs randomly 
 void Board::initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y) {
-	while(nbombs > 0) {
+	while(n_bombs > 0) {
 		std::uint8_t rand_x = rand() % board_size;
 		std::uint8_t rand_y = rand() % board_size;
 		if(in_3_by_3_range(x, y, rand_x, rand_y))
@@ -44,7 +44,7 @@ void Board::initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y) {
 			continue;
 		this->tiles[rand_y][rand_x].tile_value = 9;
 		this->update_tile_values(rand_x, rand_y);
-		nbombs--;
+		n_bombs--;
 	}
 }
 
@@ -61,7 +61,39 @@ Tile::TileState Board::get_state(std::uint8_t x, std::uint8_t y) {
 }
 
 
+// Board::uncover_surrounding
+// a recursive function that uncovers indeced around a state
+void Board::uncover_surrounding(std::uint8_t x, std::uint8_t y) {
+	std::uint8_t i = min(y - 1, y), initial_j = min(x - 1, x);
+	constexpr std::uint8_t max_value = board_size - 1;
+	std::uint8_t fin_i = min(max_value, y + 1), fin_j = min(max_value, x + 1);
+	for(;i <= fin_i; i++) {
+		for(int j = initial_j;j <= fin_j;j++) {
+			if(get_state(j, i) == Tile::TileState::Covered
+				&& !is_bomb(j, i))
+				this->tiles[y][x].tile_state = Tile::TileState::Uncovered;
+			if(is_empty(j, i))
+				uncover_surrounding(j, i);
+		}
+	}
+}
+
+
+// Board::is_empty
+// used by Board::uncover & Board::uncover_surrounding to determine if recursion is required
+bool Board::is_empty(std::uint8_t x, std::uint8_t y) {
+	return this->tiles[y][x].tile_value == 0;
+}
+
+// Board::uncover
+// uncovers the requested index, returns true if it's a bomb
 bool Board::uncover(std::uint8_t x, std::uint8_t y) {
 	this->tiles[y][x].tile_state = Tile::TileState::Uncovered;
-	return is_bomb(x, y);
+	if(!is_bomb(x, y)){
+		if(is_empty(x, y))
+			uncover_surrounding(x, y);
+		return false;
+	} else {
+		return true;
+	}
 }

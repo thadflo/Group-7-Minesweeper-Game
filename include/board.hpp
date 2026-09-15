@@ -15,6 +15,8 @@ class Board {
 	private:
 		Tile tiles[board_size][board_size] = {0};
 		void update_tile_values(std::uint8_t x, std::uint8_t y);
+		void uncover_surrounding(std::uint8_t x, std::uint8_t y);
+		bool is_empty(std::uint8_t x, std::uint8_t y);
 
 	public:
 		// Board Constructor
