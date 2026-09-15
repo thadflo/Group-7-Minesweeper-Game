@@ -42,6 +42,13 @@ UIWindow::UIWindow(){
       sigc::bind(sigc::mem_fun(*this, &UIWindow::on_button_clicked), i + 1)
     );
 
+    auto right_click = Gtk::GestureClick::create();
+    right_click->set_button(GDK_BUTTON_SECONDARY);
+    right_click->signal_pressed().connect([this, id = i + 1](int, double, double) {
+      on_button_right_clicked(id);
+    });
+    m_buttons[i].add_controller(right_click);
+
     int col = i % GRID_SIZE;
     int row = i / GRID_SIZE;
     m_button_grid.attach(m_buttons[i], col, row, 1, 1);
@@ -61,4 +68,8 @@ void UIWindow::on_button_clicked(int id){
   m_buttons[idx].set_sensitive(false);
 
   //then down here update the label
+}
+
+void UIWindow::on_button_right_clicked(int id){
+  m_input_handler.handle_tile_click(id, ClickType::RIGHT);
 }

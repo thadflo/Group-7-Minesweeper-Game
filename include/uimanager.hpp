@@ -21,6 +21,7 @@ class UIWindow : public Gtk::Window{
 
     //Signal handler
     void on_button_clicked(int id);
+    void on_button_right_clicked(int id);
 };
 
 #endif // UIMANAGER_H
