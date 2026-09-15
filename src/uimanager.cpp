@@ -1,6 +1,11 @@
 #include "uimanager.hpp"
-#include <iostream>
+
 using namespace std;
+
+constexpr int GRID_SIZE = 10;
+constexpr int TILE_COUNT = GRID_SIZE * GRID_SIZE;
+constexpr int TILE_SIZE_PX = 42;
+constexpr int GRID_SPACING = 3;
 
 UIWindow::UIWindow(){
   set_title("Minesweeper");
@@ -23,22 +28,22 @@ UIWindow::UIWindow(){
   m_label.set_halign(Gtk::Align::CENTER);
   m_main_box.append(m_label);
   
-  m_button_grid.set_row_spacing(3);
-  m_button_grid.set_column_spacing(3);
+  m_button_grid.set_row_spacing(GRID_SPACING);
+  m_button_grid.set_column_spacing(GRID_SPACING);
   m_button_grid.set_halign(Gtk::Align::CENTER);   // center the grid
   m_button_grid.set_valign(Gtk::Align::CENTER);
 
   // Attach buttons to grid
-  for (int i = 0; i < 100; ++i){
-    m_buttons[i].set_label("Button " + to_string(i + 1));
-    m_buttons[i].set_size_request(42, 42); 
+  for (int i = 0; i < TILE_COUNT; ++i){
+    m_buttons[i].set_label(to_string(i + 1));
+    m_buttons[i].set_size_request(TILE_SIZE_PX, TILE_SIZE_PX); 
     // Connect click signal using a lambda to pass the button ID
     m_buttons[i].signal_clicked().connect(
       sigc::bind(sigc::mem_fun(*this, &UIWindow::on_button_clicked), i + 1)
     );
 
-    int col = i % 10;
-    int row = i / 10;
+    int col = i % GRID_SIZE;
+    int row = i / GRID_SIZE;
     m_button_grid.attach(m_buttons[i], col, row, 1, 1);
   }
 
