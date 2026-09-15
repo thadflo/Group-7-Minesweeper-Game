@@ -20,6 +20,15 @@ class Board {
 		// Board Constructor
 		Board() {};
 		void initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y);
+
+		bool is_bomb(std::uint8_t x, std::uint8_t y);
+		Tile::TileState get_state(std::uint8_t x, std::uint8_t y);
+
+		void toggle_flag(std::uint8_t x, std::uint8_t y);
+		
+		// return true if a bomb was uncovered
+		bool uncover(std::uint8_t x, std::uint8_t y);
+
 		//Not sure if neccessary but might need to free Board.tiles 
 		~Board() {};
 };
