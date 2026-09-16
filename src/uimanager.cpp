@@ -77,7 +77,7 @@ void UIWindow::on_button_clicked(int id){
   m_input_handler.handle_tile_click(id, ClickType::LEFT);
   int idx = id - 1;
   //Do not let player leftclick on a flagged tile
-  if (m_buttons[idx].has_css_class("flag")) return;
+  if (m_buttons[idx].get_label() == "🚩") return;
   m_buttons[idx].remove_css_class("normal");
   m_buttons[idx].add_css_class("clicked");
   m_buttons[idx].set_sensitive(false);
