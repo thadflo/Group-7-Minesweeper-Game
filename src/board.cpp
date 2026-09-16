@@ -69,7 +69,7 @@ void Board::uncover_surrounding(uint8_t x, uint8_t y) {
 	constexpr uint8_t max_value = board_size - 1;
 	uint8_t fin_y = min(max_value, y + 1), fin_x = min(max_value, x + 1);
 	for(;cur_y <= fin_y; cur_y++) {
-		for(uint8_t cur_x = init_x;j <= fin_y; cur_y++) {
+		for(uint8_t cur_x = init_x;x <= fin_x; cur_x++) {
 			if(get_state(cur_x, cur_y) == Tile::TileState::Covered
 				&& !is_bomb(cur_x, cur_y))
 				this->tiles[cur_y][cur_x].tile_state = Tile::TileState::Uncovered;
