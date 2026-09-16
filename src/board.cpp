@@ -34,8 +34,8 @@ void Board::update_tile_values(uint8_t x, uint8_t y) {
 
 // Board::initialize
 // Places bombs randomly 
-void Board::initialize(uint8_t n_bombs, uint8_t x, uint8_t y) {
-	while(n_bombs > 0) {
+void Board::initialize(uint8_t bomb_count, uint8_t x, uint8_t y) {
+	while(bomb_count > 0) {
 		uint8_t rand_x = rand() % board_size;
 		uint8_t rand_y = rand() % board_size;
 		if(in_3_by_3_range(x, y, rand_x, rand_y))
@@ -45,7 +45,7 @@ void Board::initialize(uint8_t n_bombs, uint8_t x, uint8_t y) {
 			continue;
 		this->tiles[rand_y][rand_x].tile_value = 9;
 		this->update_tile_values(rand_x, rand_y);
-		n_bombs--;
+		bomb_count--;
 	}
 }
 
