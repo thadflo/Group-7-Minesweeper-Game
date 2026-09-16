@@ -33,7 +33,7 @@ void Board::update_tile_values(std::uint8_t x, std::uint8_t y) {
 
 // Board::initialize
 // Places bombs randomly 
-void Board::initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y) {
+void Board::initialize(std::uint8_t n_bombs, std::uint8_t x, std::uint8_t y) {
 	while(n_bombs > 0) {
 		std::uint8_t rand_x = rand() % board_size;
 		std::uint8_t rand_y = rand() % board_size;
@@ -71,7 +71,7 @@ void Board::uncover_surrounding(std::uint8_t x, std::uint8_t y) {
 		for(int j = initial_j;j <= fin_j;j++) {
 			if(get_state(j, i) == Tile::TileState::Covered
 				&& !is_bomb(j, i))
-				this->tiles[y][x].tile_state = Tile::TileState::Uncovered;
+				this->tiles[i][j].tile_state = Tile::TileState::Uncovered;
 			if(is_empty(j, i))
 				uncover_surrounding(j, i);
 		}
