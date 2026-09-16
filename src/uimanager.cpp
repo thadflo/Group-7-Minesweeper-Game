@@ -19,8 +19,6 @@ UIWindow::UIWindow(){
         "window grid button.normal:hover, window grid button.normal:active { background: #695f65; color: #695f65; }"
         "window grid button.clicked { background: #a0a09b; color: #a0a09b; }"
         "window grid button.clicked:hover, window grid button.clicked:active, window grid button.clicked:disabled { background: #a0a09b; color: #a0a09b; opacity: 1; }"
-        "window grid button.flag { background: #FF0000; color: #FF0000; }"
-        "window grid button.flag:hover, window grid button.flag:active { background: #d00000; color: #d00000; }"
     ); 
     //override user theming for GTK, ensuring our CSS takes priority
     auto default_display = Gdk::Display::get_default();
