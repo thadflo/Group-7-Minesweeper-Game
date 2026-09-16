@@ -15,11 +15,13 @@ class Board {
 	private:
 		Tile tiles[board_size][board_size] = {0};
 		void update_tile_values(std::uint8_t x, std::uint8_t y);
+		void uncover_surrounding(std::uint8_t x, std::uint8_t y);
+		bool is_empty(std::uint8_t x, std::uint8_t y);
 
 	public:
 		// Board Constructor
 		Board() {};
-		void initialize(std::uint8_t nbombs, std::uint8_t x, std::uint8_t y);
+		void initialize(std::uint8_t n_bombs, std::uint8_t x, std::uint8_t y);
 
 		bool is_bomb(std::uint8_t x, std::uint8_t y);
 		Tile::TileState get_state(std::uint8_t x, std::uint8_t y);
