@@ -61,7 +61,6 @@ Tile::TileState Board::get_state(uint8_t x, uint8_t y) {
 	return this->tiles[y][x].tile_state;
 }
 
-
 // Board::uncover_surrounding
 // a recursive function that uncovers indeced around a state
 void Board::uncover_surrounding(uint8_t x, uint8_t y) {
@@ -79,6 +78,16 @@ void Board::uncover_surrounding(uint8_t x, uint8_t y) {
 	}
 }
 
+// Board::is_empty
+// Toggle from tilestate Flagged to Covered & back
+void Board::toggle_flag(std::uint8_t x, std::uint8_t y) {
+	Tile::TileState state = get_state(x, y);
+	if(state == Tile::TileState::Covered){
+		this->tiles[y][x].tile_state = Tile::TileState::Flagged;
+	} else if (state == Tile::TileState::Flagged) {
+		this->tiles[y][x].tile_state = Tile::TileState::Covered;
+	}
+}
 
 // Board::is_empty
 // used by Board::uncover & Board::uncover_surrounding to determine if recursion is required
