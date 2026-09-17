@@ -27,9 +27,9 @@ void InputHandler::handle_tile_click(int button_id, ClickType type) {
     }
 }
  
-void InputHandler::handle_start_game() {
+void InputHandler::handle_start_game(int num_bombs) {
     if (on_start_game) {
-        on_start_game();
+        on_start_game(num_bombs);
     }
 }
  

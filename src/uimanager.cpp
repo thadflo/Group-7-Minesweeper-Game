@@ -20,22 +20,49 @@ UIWindow::UIWindow(){
         "window grid button.clicked { background: #a0a09b; color: #a0a09b; }"
         "window grid button.clicked:hover, window grid button.clicked:active, window grid button.clicked:disabled { background: #a0a09b; color: #a0a09b; opacity: 1; }"
     ); 
-    //override user theming for GTK, ensuring our CSS takes priority
-    auto default_display = Gdk::Display::get_default();
-    if (default_display) {
-        Gtk::StyleProvider::add_provider_for_display( 
-            default_display, 
-            css_provider, 
-            GTK_STYLE_PROVIDER_PRIORITY_USER 
-        ); 
-    }
   
+  //override user theming for GTK, ensuring our CSS takes priority
+  auto default_display = Gdk::Display::get_default();
+  if (default_display) {
+      Gtk::StyleProvider::add_provider_for_display( 
+          default_display, 
+          css_provider, 
+          GTK_STYLE_PROVIDER_PRIORITY_USER 
+      ); 
+  }
+
   m_main_box.set_margin(10);
   m_main_box.set_spacing(8);
   set_child(m_main_box);
   //add game title to top-center
   m_label.set_halign(Gtk::Align::CENTER);
   m_main_box.append(m_label);
+}
+UIWindow::~UIWindow(){}
+
+StartWindow::StartWindow() {
+  //Set scale
+  m_bomb_scale.set_range(20, 30);
+  m_bomb_scale.set_digits(0);
+  m_bomb_scale.set_increments(1, 5);
+  m_bomb_scale.set_value(20);
+  m_bomb_scale.set_draw_value(true); // Show the numeric value next to the slider
+  m_bomb_scale.set_value_pos(Gtk::PositionType::TOP); // Place numeric value above slider
+  m_main_box.append(m_bomb_scale);
+
+  //Set button
+  m_start_button.set_label("Start");
+  m_start_button.signal_clicked().connect(sigc::mem_fun(*this, &StartWindow::on_start_button_clicked));
+  m_main_box.append(m_start_button);
+}
+
+StartWindow::~StartWindow(){}
+
+void StartWindow::on_start_button_clicked() {
+  m_input_handler.handle_start_game(m_bomb_scale.get_value());
+}
+
+GameWindow::GameWindow(){
   //add button grid to bottom
   m_button_grid.set_row_spacing(GRID_SPACING);
   m_button_grid.set_column_spacing(GRID_SPACING);
@@ -50,7 +77,7 @@ UIWindow::UIWindow(){
     m_buttons[i].set_label("");
     //add signals for left click
     m_buttons[i].signal_clicked().connect(
-      sigc::bind(sigc::mem_fun(*this, &UIWindow::on_button_clicked), i + 1)
+      sigc::bind(sigc::mem_fun(*this, &GameWindow::on_button_clicked), i + 1)
     );
     //add signals for right click
     auto right_click = Gtk::GestureClick::create();
@@ -65,13 +92,26 @@ UIWindow::UIWindow(){
     m_button_grid.attach(m_buttons[i], col, row, 1, 1);
   }
 
+  
+  m_end_box.set_halign(Gtk::Align::CENTER);
+  m_end_box.set_valign(Gtk::Align::CENTER);
+  m_end_box.append(m_end_label);
+  m_play_again_button.signal_clicked().connect(sigc::mem_fun(*this, &GameWindow::on_play_again_clicked));
+  m_end_box.append(m_play_again_button);
+  m_quit_button.signal_clicked().connect(sigc::mem_fun(*this, &GameWindow::on_quit_clicked));
+  m_end_box.append(m_quit_button);
+  m_end_box.set_visible(false);
+
+  m_overlay.set_child(m_button_grid);
+  m_overlay.add_overlay(m_end_box);
+
   //add the grid to the bottom of the main box
-  m_main_box.append(m_button_grid);
+  m_main_box.append(m_overlay);
 }
 
-UIWindow::~UIWindow(){}
+GameWindow::~GameWindow(){}
 
-void UIWindow::on_button_clicked(int id){
+void GameWindow::on_button_clicked(int id){
   /* Handler for left button clicks */
   //sends signal to the game input handler
   m_input_handler.handle_tile_click(id, ClickType::LEFT);
@@ -86,7 +126,7 @@ void UIWindow::on_button_clicked(int id){
   //perhaps m_input_handler should return an array of affected tiles or smt
 }
 
-void UIWindow::on_button_right_clicked(int id){
+void GameWindow::on_button_right_clicked(int id){
   /*Handler for right clicks on button*/
   m_input_handler.handle_tile_click(id, ClickType::RIGHT);
   int idx = id - 1;
@@ -104,4 +144,21 @@ void UIWindow::on_button_right_clicked(int id){
   */
   //rigt now just using this emoji, the svg was too large or smth and cause issues
   m_buttons[idx].set_label("🚩");
+}
+
+void GameWindow::show_end_screen(bool won){
+  m_end_label.set_label(won ? "Winner!" : "Defeat");
+  m_end_box.set_visible(true);
+  for (auto& button : m_buttons){
+    button.set_sensitive(false);
+  }
+}
+
+void GameWindow::on_play_again_clicked(){
+  m_end_box.set_visible(false);
+  m_input_handler.handle_retry();
+}
+
+void GameWindow::on_quit_clicked(){
+  m_input_handler.handle_close();
 }
