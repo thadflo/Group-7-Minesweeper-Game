@@ -24,7 +24,7 @@ class InputHandler {
 
         // Call these from UIManager's signal handlers
         void handle_tile_click(int button_id, ClickType type);
-        void handle_start_game();
+        void handle_start_game(int num_bombs);
         void handle_retry();
         void handle_close();
 
@@ -33,7 +33,7 @@ class InputHandler {
         // else's code exists.
         std::function<void(int row, int col)> on_reveal_tile;
         std::function<void(int row, int col)> on_flag_tile;
-        std::function<void()> on_start_game;
+        std::function<void(int num_bombs)> on_start_game;
         std::function<void()> on_retry;
         std::function<void()> on_close;
 

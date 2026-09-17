@@ -5,6 +5,16 @@
 int main(int argc, char* argv[]){
   auto app = Gtk::Application::create("org.gtkmm.example");
 
-  //Shows the window and returns when it is closed.
-  return app->make_window_and_run<UIWindow>(argc, argv);
+  //Windows must be constructed and added after GApplication::startup,
+  //which only fires once app->run() begins - so build them here, not in main().
+  app->signal_activate().connect([app](){
+    static StartWindow start_window;
+    static GameWindow game_window;
+
+    app->add_window(start_window);
+    app->add_window(game_window);
+    start_window.present();
+  });
+
+  return app->run(argc, argv);
 }
