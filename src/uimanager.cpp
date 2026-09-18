@@ -120,8 +120,7 @@ GameWindow::~GameWindow(){}
 
 void GameWindow::start_game(int bomb_count) {
   m_bomb_count = bomb_count;
-  m_game_started = false;
-  m_game_over = false;
+  m_game_state = GameState::NotStarted;
   m_end_box.set_visible(false);
   for (int i = 0; i < TILE_COUNT; ++i) {
     m_buttons[i].remove_css_class("clicked");
@@ -180,10 +179,10 @@ void GameWindow::update_all_displays() {
 }
 
 std::vector<TileChange> GameWindow::reveal_tile(int row, int col) {
-  if (m_game_over) return {};
-  if (!m_game_started) {
+  if (m_game_state == GameState::Won || m_game_state == GameState::Lost) return {};
+  if (m_game_state == GameState::NotStarted) {
     m_board.initialize(static_cast<std::uint8_t>(m_bomb_count), static_cast<std::uint8_t>(col), static_cast<std::uint8_t>(row));
-    m_game_started = true;
+    m_game_state = GameState::Playing;
   }
 
   if (m_board.get_state(col, row) == Tile::TileState::Flagged) {
@@ -214,7 +213,7 @@ std::vector<TileChange> GameWindow::reveal_tile(int row, int col) {
   }
 
   if (hit_bomb) {
-    m_game_over = true;
+    m_game_state = GameState::Lost;
     changes.push_back({row, col, TileAction::Lose});
   }
 
@@ -222,8 +221,7 @@ std::vector<TileChange> GameWindow::reveal_tile(int row, int col) {
 }
 
 std::vector<TileChange> GameWindow::flag_tile(int row, int col) {
-  if (m_game_over) return {};
-  if (!m_game_started) {
+  if (m_game_state != GameState::Playing) {
     return {};
   }
 

@@ -62,9 +62,10 @@ class GameWindow : public UIWindow {
     Gtk::Button m_quit_button{"Quit"};
 
     //Board state
+    enum class GameState { NotStarted, Playing, Won, Lost };
+
     Board m_board;
-    bool m_game_started = false;
-    bool m_game_over = false;
+    GameState m_game_state = GameState::NotStarted;
     int m_bomb_count = 20;
 
     void update_button_display(int row, int col);

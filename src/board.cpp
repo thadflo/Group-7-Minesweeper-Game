@@ -80,8 +80,6 @@ void Board::uncover_surrounding(uint8_t x, uint8_t y) {
 
 	for (uint8_t cur_y = start_y; cur_y <= end_y; ++cur_y) {
 		for (uint8_t cur_x = start_x; cur_x <= end_x; ++cur_x) {
-			if (cur_x == x && cur_y == y)
-				continue;
 			if (get_state(cur_x, cur_y) == Tile::TileState::Covered && !is_bomb(cur_x, cur_y)) {
 				this->tiles[cur_y][cur_x].tile_state = Tile::TileState::Uncovered;
 				if (is_empty(cur_x, cur_y))
