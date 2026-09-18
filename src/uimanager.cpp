@@ -17,8 +17,8 @@ UIWindow::UIWindow(){
   css_provider->load_from_data(
         "window grid button.normal { background: #695f65; color: #695f65; }"
         "window grid button.normal:hover, window grid button.normal:active { background: #695f65; color: #695f65; }"
-        "window grid button.clicked { background: #a0a09b; color: #a0a09b; }"
-        "window grid button.clicked:hover, window grid button.clicked:active, window grid button.clicked:disabled { background: #a0a09b; color: #a0a09b; opacity: 1; }"
+        "window grid button.clicked { background: #a0a09b; color: #2f2a2d; }"
+        "window grid button.clicked:hover, window grid button.clicked:active, window grid button.clicked:disabled { background: #a0a09b; color: #2f2a2d; opacity: 1; }"
     ); 
   
   //override user theming for GTK, ensuring our CSS takes priority
@@ -59,10 +59,16 @@ StartWindow::StartWindow() {
 StartWindow::~StartWindow(){}
 
 void StartWindow::on_start_button_clicked() {
-  m_input_handler.handle_start_game(m_bomb_scale.get_value());
+  auto changes = m_input_handler.handle_start_game(static_cast<int>(m_bomb_scale.get_value()));
+  (void)changes;
 }
 
 GameWindow::GameWindow(){
+  m_input_handler.on_start_game = [this](int num_bombs) { start_game(num_bombs); };
+  m_input_handler.on_retry = [this]() { reset_game(); };
+  m_input_handler.on_reveal_tile = [this](int row, int col) { return reveal_tile(row, col); };
+  m_input_handler.on_flag_tile = [this](int row, int col) { return flag_tile(row, col); };
+
   //add button grid to bottom
   m_button_grid.set_row_spacing(GRID_SPACING);
   m_button_grid.set_column_spacing(GRID_SPACING);
@@ -107,43 +113,154 @@ GameWindow::GameWindow(){
 
   //add the grid to the bottom of the main box
   m_main_box.append(m_overlay);
+  reset_game();
 }
 
 GameWindow::~GameWindow(){}
 
+void GameWindow::start_game(int bomb_count) {
+  m_bomb_count = bomb_count;
+  m_game_started = false;
+  m_game_over = false;
+  m_end_box.set_visible(false);
+  for (int i = 0; i < TILE_COUNT; ++i) {
+    m_buttons[i].remove_css_class("clicked");
+    m_buttons[i].add_css_class("normal");
+    m_buttons[i].set_label("");
+    m_buttons[i].set_sensitive(true);
+  }
+  m_board = Board{};
+}
+
+void GameWindow::reset_game() {
+  start_game(m_bomb_count);
+}
+
+void GameWindow::update_button_display(int row, int col) {
+  const int idx = row * GRID_SIZE + col;
+  auto& button = m_buttons[idx];
+  auto state = m_board.get_state(col, row);
+
+  if (state == Tile::TileState::Flagged) {
+    button.set_label("🚩");
+    button.set_sensitive(true);
+    return;
+  }
+
+  if (state != Tile::TileState::Uncovered) {
+    button.set_label("");
+    button.set_sensitive(true);
+    return;
+  }
+
+  button.remove_css_class("normal");
+  button.add_css_class("clicked");
+  button.set_sensitive(false);
+
+  if (m_board.is_bomb(col, row)) {
+    button.set_label("💣");
+    return;
+  }
+
+  const auto value = m_board.get_tile_value(col, row);
+  if (value == 0) {
+    button.set_label("");
+    return;
+  }
+
+  button.set_label(std::to_string(value));
+}
+
+void GameWindow::update_all_displays() {
+  for (int row = 0; row < GRID_SIZE; ++row) {
+    for (int col = 0; col < GRID_SIZE; ++col) {
+      update_button_display(row, col);
+    }
+  }
+}
+
+std::vector<TileChange> GameWindow::reveal_tile(int row, int col) {
+  if (m_game_over) return {};
+  if (!m_game_started) {
+    m_board.initialize(static_cast<std::uint8_t>(m_bomb_count), static_cast<std::uint8_t>(col), static_cast<std::uint8_t>(row));
+    m_game_started = true;
+  }
+
+  if (m_board.get_state(col, row) == Tile::TileState::Flagged) {
+    return {};
+  }
+
+  std::vector<Tile::TileState> previous_states;
+  previous_states.reserve(TILE_COUNT);
+  for (int r = 0; r < GRID_SIZE; ++r) {
+    for (int c = 0; c < GRID_SIZE; ++c) {
+      previous_states.push_back(m_board.get_state(c, r));
+    }
+  }
+
+  const bool hit_bomb = m_board.uncover(col, row);
+  std::vector<TileChange> changes;
+  for (int r = 0; r < GRID_SIZE; ++r) {
+    for (int c = 0; c < GRID_SIZE; ++c) {
+      const int index = r * GRID_SIZE + c;
+      if (previous_states[index] != Tile::TileState::Uncovered &&
+          m_board.get_state(c, r) == Tile::TileState::Uncovered) {
+        const auto action = m_board.is_bomb(c, r)
+          ? TileAction::MineHit
+          : (r == row && c == col ? TileAction::Reveal : TileAction::RevealCascade);
+        changes.push_back({r, c, action});
+      }
+    }
+  }
+
+  if (hit_bomb) {
+    m_game_over = true;
+    changes.push_back({row, col, TileAction::Lose});
+  }
+
+  return changes;
+}
+
+std::vector<TileChange> GameWindow::flag_tile(int row, int col) {
+  if (m_game_over) return {};
+  if (!m_game_started) {
+    return {};
+  }
+
+  const auto state = m_board.get_state(col, row);
+  if (state == Tile::TileState::Uncovered) {
+    return {};
+  }
+
+  m_board.toggle_flag(col, row);
+  const auto action = state == Tile::TileState::Flagged
+    ? TileAction::Unflag
+    : TileAction::Flag;
+  return {{row, col, action}};
+}
+
 void GameWindow::on_button_clicked(int id){
   /* Handler for left button clicks */
-  //sends signal to the game input handler
-  m_input_handler.handle_tile_click(id, ClickType::LEFT);
-  int idx = id - 1;
-  //Do not let player leftclick on a flagged tile
-  if (m_buttons[idx].get_label() == "🚩") return;
-  m_buttons[idx].remove_css_class("normal");
-  m_buttons[idx].add_css_class("clicked");
-  m_buttons[idx].set_sensitive(false);
-
-  //then down here update the labels for this tile and surrounding tiles
-  //perhaps m_input_handler should return an array of affected tiles or smt
+  auto changes = m_input_handler.handle_tile_click(id, ClickType::LEFT);
+  for (const auto& change : changes) {
+    if (change.action == TileAction::Reveal ||
+        change.action == TileAction::RevealCascade ||
+        change.action == TileAction::MineHit) {
+      update_button_display(change.row, change.col);
+    } else if (change.action == TileAction::Lose) {
+      show_end_screen(false);
+    }
+  }
 }
 
 void GameWindow::on_button_right_clicked(int id){
   /*Handler for right clicks on button*/
-  m_input_handler.handle_tile_click(id, ClickType::RIGHT);
-  int idx = id - 1;
-  //If flag already exists, remove it
-  if (m_buttons[idx].get_label() == "🚩") {
-    m_buttons[idx].set_label("");
-    return;
+  auto changes = m_input_handler.handle_tile_click(id, ClickType::RIGHT);
+  for (const auto& change : changes) {
+    if (change.action == TileAction::Flag || change.action == TileAction::Unflag) {
+      update_button_display(change.row, change.col);
+    }
   }
-  //add flag picture
-  /*
-  auto* img = Gtk::make_managed<Gtk::Image>();
-  gtk_image_set_from_file(GTK_IMAGE(img->gobj()), "flag.svg");
-  img->set_pixel_size(TILE_SIZE_PX - 12);
-  m_buttons[idx].set_child(*img);
-  */
-  //rigt now just using this emoji, the svg was too large or smth and cause issues
-  m_buttons[idx].set_label("🚩");
 }
 
 void GameWindow::show_end_screen(bool won){

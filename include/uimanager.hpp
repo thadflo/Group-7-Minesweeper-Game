@@ -2,6 +2,7 @@
 #define UIMANAGER_H
 
 #include <gtkmm.h>
+#include "board.hpp"
 #include "input_handler.hpp"
 
 class UIWindow : public Gtk::Window{
@@ -9,13 +10,15 @@ class UIWindow : public Gtk::Window{
         UIWindow();
         ~UIWindow() override;
 
+    public:
+    InputHandler m_input_handler{10};
+
     protected:
     //Box
     Gtk::Box m_main_box{Gtk::Orientation::VERTICAL, 10};
 
     //Widgets
     Gtk::Label m_label{"Minesweeper"};
-    InputHandler m_input_handler{10};
 };
 
 class StartWindow : public UIWindow {
@@ -39,6 +42,10 @@ class GameWindow : public UIWindow {
 
         //Shows the win/defeat overlay. Called once something detects the game has ended.
         void show_end_screen(bool won);
+        void start_game(int bomb_count);
+        void reset_game();
+        std::vector<TileChange> reveal_tile(int row, int col);
+        std::vector<TileChange> flag_tile(int row, int col);
 
     protected:
     //Layout
@@ -53,6 +60,15 @@ class GameWindow : public UIWindow {
     Gtk::Label m_end_label;
     Gtk::Button m_play_again_button{"Play Again"};
     Gtk::Button m_quit_button{"Quit"};
+
+    //Board state
+    Board m_board;
+    bool m_game_started = false;
+    bool m_game_over = false;
+    int m_bomb_count = 20;
+
+    void update_button_display(int row, int col);
+    void update_all_displays();
 
     //Signal handler
     void on_button_clicked(int id);

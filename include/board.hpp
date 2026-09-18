@@ -24,6 +24,7 @@ class Board {
 		void initialize(std::uint8_t bomb_count, std::uint8_t x, std::uint8_t y);
 
 		bool is_bomb(std::uint8_t x, std::uint8_t y);
+		std::uint8_t get_tile_value(std::uint8_t x, std::uint8_t y) const; 
 		Tile::TileState get_state(std::uint8_t x, std::uint8_t y);
 
 		void toggle_flag(std::uint8_t x, std::uint8_t y);
