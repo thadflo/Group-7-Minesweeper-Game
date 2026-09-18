@@ -59,8 +59,9 @@ StartWindow::StartWindow() {
 StartWindow::~StartWindow(){}
 
 void StartWindow::on_start_button_clicked() {
-  auto changes = m_input_handler.handle_start_game(static_cast<int>(m_bomb_scale.get_value()));
-  (void)changes;
+  if (m_input_handler.on_start_game) {
+    m_input_handler.on_start_game(static_cast<int>(m_bomb_scale.get_value()));
+  }
 }
 
 GameWindow::GameWindow(){
@@ -271,9 +272,13 @@ void GameWindow::show_end_screen(bool won){
 
 void GameWindow::on_play_again_clicked(){
   m_end_box.set_visible(false);
-  m_input_handler.handle_retry();
+  if (m_input_handler.on_retry) {
+    m_input_handler.on_retry();
+  }
 }
 
 void GameWindow::on_quit_clicked(){
-  m_input_handler.handle_close();
+  if (m_input_handler.on_close) {
+    m_input_handler.on_close();
+  }
 }

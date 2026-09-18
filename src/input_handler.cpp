@@ -25,27 +25,3 @@ std::vector<TileChange> InputHandler::handle_tile_click(int button_id, ClickType
 
     return {};
 }
-
-std::vector<TileChange> InputHandler::handle_start_game(int num_bombs) {
-    if (on_start_game) {
-        on_start_game(num_bombs);
-    }
-
-    return {{0, 0, TileAction::Start}};
-}
-
-std::vector<TileChange> InputHandler::handle_retry() {
-    if (on_retry) {
-        on_retry();
-    }
-
-    return {{0, 0, TileAction::Retry}};
-}
-
-std::vector<TileChange> InputHandler::handle_close() {
-    if (on_close) {
-        on_close();
-    }
-
-    return {{0, 0, TileAction::Close}};
-}

@@ -19,10 +19,7 @@ enum class TileAction {
     RevealCascade,
     MineHit,
     Win,
-    Lose,
-    Start,
-    Retry,
-    Close
+    Lose
 };
 
 struct TileChange {
@@ -41,12 +38,6 @@ class InputHandler {
 
         // handle a tile click and return all changes produced by the move
         std::vector<TileChange> handle_tile_click(int button_id, ClickType type);
-
-        // Handle start, retry, and close actions. These return a game-level
-        // change so callers can use one result type for every input event.
-        std::vector<TileChange> handle_start_game(int num_bombs);
-        std::vector<TileChange> handle_retry();
-        std::vector<TileChange> handle_close();
 
         // Game logic callbacks. Tile callbacks return the changes
         // caused by the move, lifecycle callbacks perform window actions
