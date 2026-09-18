@@ -7,15 +7,6 @@ using namespace std;
 constexpr uint8_t min(uint8_t a, uint8_t b) {
 	return a < b ? a : b;
 }
- // keep recursive calls within the board size
-constexpr int board_max(int a, int b) {
-	return a > b ? a : b;
-}
-
-constexpr int board_min(int a, int b) {
-	return a < b ? a : b;
-}
-
 constexpr bool in_3_by_3_range(uint8_t x, uint8_t y, uint8_t new_x, uint8_t new_y) {
 	bool below = new_y <= min(y + 1, board_size), above = new_y >= min(y - 1, y);
 	bool left = new_x <= min(x + 1, board_size), right = new_x >= min(x - 1, x);
@@ -81,15 +72,14 @@ Tile::TileState Board::get_state(uint8_t x, uint8_t y) {
 
 // Board::uncover_surrounding
 // a recursive function that uncovers indeced around a state
-// changed to ints so there is no unsigned underflow
 void Board::uncover_surrounding(uint8_t x, uint8_t y) {
-	const int start_y = board_max(0, static_cast<int>(y) - 1);
-	const int end_y = board_min(static_cast<int>(board_size) - 1, static_cast<int>(y) + 1);
-	const int start_x = board_max(0, static_cast<int>(x) - 1);
-	const int end_x = board_min(static_cast<int>(board_size) - 1, static_cast<int>(x) + 1);
+	const uint8_t start_y = min(y - 1, y);
+	const uint8_t end_y = min(board_size - 1, y + 1);
+	const uint8_t start_x = min(x - 1, x);
+	const uint8_t end_x = min(board_size - 1, x + 1);
 
-	for (int cur_y = start_y; cur_y <= end_y; ++cur_y) {
-		for (int cur_x = start_x; cur_x <= end_x; ++cur_x) {
+	for (uint8_t cur_y = start_y; cur_y <= end_y; ++cur_y) {
+		for (uint8_t cur_x = start_x; cur_x <= end_x; ++cur_x) {
 			if (cur_x == x && cur_y == y)
 				continue;
 			if (get_state(cur_x, cur_y) == Tile::TileState::Covered && !is_bomb(cur_x, cur_y)) {
