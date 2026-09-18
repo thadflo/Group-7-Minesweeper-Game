@@ -215,7 +215,21 @@ std::vector<TileChange> GameWindow::reveal_tile(int row, int col) {
 
   if (hit_bomb) {
     m_game_state = GameState::Lost;
-    changes.push_back({row, col, TileAction::Lose});
+  } else {
+    bool all_safe_tiles_uncovered = true;
+    for (int r = 0; r < GRID_SIZE && all_safe_tiles_uncovered; ++r) {
+      for (int c = 0; c < GRID_SIZE; ++c) {
+        if (!m_board.is_bomb(c, r) &&
+            m_board.get_state(c, r) != Tile::TileState::Uncovered) {
+          all_safe_tiles_uncovered = false;
+          break;
+        }
+      }
+    }
+
+    if (all_safe_tiles_uncovered) {
+      m_game_state = GameState::Won;
+    }
   }
 
   return changes;
@@ -246,9 +260,13 @@ void GameWindow::on_button_clicked(int id){
         change.action == TileAction::RevealCascade ||
         change.action == TileAction::MineHit) {
       update_button_display(change.row, change.col);
-    } else if (change.action == TileAction::Lose) {
-      show_end_screen(false);
     }
+  }
+
+  if (m_game_state == GameState::Won) {
+    show_end_screen(true);
+  } else if (m_game_state == GameState::Lost) {
+    show_end_screen(false);
   }
 }
 
