@@ -11,15 +11,13 @@ enum class ClickType {
     RIGHT
 };
 
-// Describes one board or game-state change returned after an input event.
+// Describes one tile change returned after an input event.
 enum class TileAction {
     Reveal,
     Flag,
     Unflag,
     RevealCascade,
-    MineHit,
-    Win,
-    Lose
+    MineHit
 };
 
 struct TileChange {
