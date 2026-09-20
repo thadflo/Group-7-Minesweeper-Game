@@ -65,6 +65,7 @@ void StartWindow::on_start_button_clicked() {
 }
 
 GameWindow::GameWindow(){
+  m_main_box.append(m_game_info);
   m_input_handler.on_start_game = [this](int num_bombs) { start_game(num_bombs); };
   m_input_handler.on_retry = [this]() { reset_game(); };
   m_input_handler.on_reveal_tile = [this](int row, int col) { return reveal_tile(row, col); };
@@ -130,6 +131,8 @@ void GameWindow::start_game(int bomb_count) {
     m_buttons[i].set_sensitive(true);
   }
   m_board = Board{};
+	auto txt = Glib::ustring::compose("Flag Count: %1 | Bomb Count: %2", m_flag_count, m_bomb_count - m_flag_count);
+	m_game_info.set_text(txt);
 }
 
 void GameWindow::reset_game() {
@@ -236,7 +239,7 @@ std::vector<TileChange> GameWindow::reveal_tile(int row, int col) {
 }
 
 std::vector<TileChange> GameWindow::flag_tile(int row, int col) {
-  if (m_game_state != GameState::Playing) {
+  if (m_flag_count >= m_bomb_count || m_game_state != GameState::Playing) {
     return {};
   }
 
@@ -249,6 +252,16 @@ std::vector<TileChange> GameWindow::flag_tile(int row, int col) {
   const auto action = state == Tile::TileState::Flagged
     ? TileAction::Unflag
     : TileAction::Flag;
+
+
+	if (action == TileAction::Flag) {
+		m_flag_count++;
+	} else {
+		m_flag_count--;
+	}
+	auto txt = Glib::ustring::compose("Flag Count: %1 | Bomb Count: %2", m_flag_count, m_bomb_count - m_flag_count);
+	m_game_info.set_text(txt);
+
   return {{row, col, action}};
 }
 

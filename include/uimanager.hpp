@@ -60,6 +60,7 @@ class GameWindow : public UIWindow {
     Gtk::Label m_end_label;
     Gtk::Button m_play_again_button{"Play Again"};
     Gtk::Button m_quit_button{"Quit"};
+    Gtk::Label m_game_info{"Flag count: _ | Bomb Count: _"};
 
     //Board state
     enum class GameState { NotStarted, Playing, Won, Lost };
@@ -67,6 +68,7 @@ class GameWindow : public UIWindow {
     Board m_board;
     GameState m_game_state = GameState::NotStarted;
     int m_bomb_count = 20;
+    int m_flag_count = 0;
 
     void update_button_display(int row, int col);
     void update_all_displays();
