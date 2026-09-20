@@ -15,8 +15,8 @@ UIWindow::UIWindow(){
   auto css_provider = Gtk::CssProvider::create();
   //set CSS theming for buttons
   css_provider->load_from_data(
-        "window grid button.normal { background: #695f65; color: #695f65; }"
-        "window grid button.normal:hover, window grid button.normal:active { background: #695f65; color: #695f65; }"
+        "window grid button.normal { background: #695f65; color: #ffffff; }"
+        "window grid button.normal:hover, window grid button.normal:active { background: #695f65; color: #ffffff; }"
         "window grid button.clicked { background: #a0a09b; color: #2f2a2d; }"
         "window grid button.clicked:hover, window grid button.clicked:active, window grid button.clicked:disabled { background: #a0a09b; color: #2f2a2d; opacity: 1; }"
     ); 
@@ -301,11 +301,16 @@ void GameWindow::show_end_screen(bool won){
 	  	const int idx = row * GRID_SIZE + col;
   		auto& button = m_buttons[idx];
   		button.set_sensitive(false);
+  		auto state = m_board.get_state(col, row);
       if (m_board.is_bomb(col, row)) {
-				button.remove_css_class("normal");
-  			button.add_css_class("clicked");
+				if (state != Tile::TileState::Uncovered) {
+					button.remove_css_class("normal");
+  				button.add_css_class("clicked");
+				}
     		button.set_label("💣");
-  		}
+  		} else if (state == Tile::TileState::Flagged) {
+    		button.set_label("");
+			}
     }
   }
 }
