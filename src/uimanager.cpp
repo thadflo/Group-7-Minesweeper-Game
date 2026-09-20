@@ -42,7 +42,7 @@ UIWindow::~UIWindow(){}
 
 StartWindow::StartWindow() {
   //Set scale
-  m_bomb_scale.set_range(20, 30);
+  m_bomb_scale.set_range(10, 20);
   m_bomb_scale.set_digits(0);
   m_bomb_scale.set_increments(1, 5);
   m_bomb_scale.set_value(20);
