@@ -101,9 +101,10 @@ GameWindow::GameWindow(){
 
   for (int i = 0; i < GRID_SIZE; ++i){
 		auto row_txt = Glib::ustring::compose("%1", i+1);
-		auto col_txt = Glib::ustring::compose("%1", static_cast<char>('A'+i));
-		Gtk::Label col(col_txt);
+		auto col_txt = Glib::ustring::compose("%1", 
+			static_cast<char>('A'+i));
 		Gtk::Label row(row_txt);
+		Gtk::Label col(col_txt);
     m_button_grid.attach(row, GRID_SIZE, i, 1, 1);
     m_button_grid.attach(col, i, GRID_SIZE, 1, 1);
   }
