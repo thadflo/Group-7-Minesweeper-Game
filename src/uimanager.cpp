@@ -326,6 +326,7 @@ void GameWindow::show_end_screen(bool won){
 			}
     }
   }
+	m_flag_count = 0;
 }
 
 void GameWindow::on_play_again_clicked(){
