@@ -296,8 +296,17 @@ void GameWindow::on_button_right_clicked(int id){
 void GameWindow::show_end_screen(bool won){
   m_end_label.set_label(won ? "Winner!" : "Defeat");
   m_end_box.set_visible(true);
-  for (auto& button : m_buttons){
-    button.set_sensitive(false);
+  for (int row = 0; row < GRID_SIZE; ++row) {
+    for (int col = 0; col < GRID_SIZE; ++col) {
+	  	const int idx = row * GRID_SIZE + col;
+  		auto& button = m_buttons[idx];
+  		button.set_sensitive(false);
+      if (m_board.is_bomb(col, row)) {
+				button.remove_css_class("normal");
+  			button.add_css_class("clicked");
+    		button.set_label("💣");
+  		}
+    }
   }
 }
 
