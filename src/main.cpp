@@ -3,7 +3,7 @@
 
 int main(int argc, char* argv[]){
   auto app = Gtk::Application::create("org.gtkmm.example");
-  Gtk::Window::set_remove_on_hide(false);
+	app->hold();
 
   // Windows must be constructed and added after GApplication::startup,
   // which only fires once app->run() begins - so build them here, not in main().

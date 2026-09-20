@@ -2,7 +2,6 @@
 
 using namespace std;
 
-constexpr int GRID_SIZE = 10;
 constexpr int TILE_COUNT = GRID_SIZE * GRID_SIZE;
 constexpr int TILE_SIZE_PX = 42;
 constexpr int GRID_SPACING = 3;
@@ -100,7 +99,15 @@ GameWindow::GameWindow(){
     m_button_grid.attach(m_buttons[i], col, row, 1, 1);
   }
 
-  
+  for (int i = 0; i < GRID_SIZE; ++i){
+		auto row_txt = Glib::ustring::compose("%1", i+1);
+		auto col_txt = Glib::ustring::compose("%1", static_cast<char>('A'+i));
+		Gtk::Label col(col_txt);
+		Gtk::Label row(row_txt);
+    m_button_grid.attach(row, GRID_SIZE, i, 1, 1);
+    m_button_grid.attach(col, i, GRID_SIZE, 1, 1);
+  }
+
   m_end_box.set_halign(Gtk::Align::CENTER);
   m_end_box.set_valign(Gtk::Align::CENTER);
   m_end_box.append(m_end_label);
