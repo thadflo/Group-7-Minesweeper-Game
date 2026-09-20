@@ -139,7 +139,7 @@ void GameWindow::start_game(int bomb_count) {
     m_buttons[i].set_sensitive(true);
   }
   m_board = Board{};
-	auto txt = Glib::ustring::compose("Flag Count: %1 | Bomb Count: %2", m_flag_count, m_bomb_count - m_flag_count);
+	auto txt = Glib::ustring::compose("Flags Placed: %1 | (Bombs/Flags) left: %2", m_flag_count, m_bomb_count - m_flag_count);
 	m_game_info.set_text(txt);
 }
 
@@ -247,7 +247,7 @@ std::vector<TileChange> GameWindow::reveal_tile(int row, int col) {
 }
 
 std::vector<TileChange> GameWindow::flag_tile(int row, int col) {
-  if (m_flag_count >= m_bomb_count || m_game_state != GameState::Playing) {
+  if (m_game_state != GameState::Playing) {
     return {};
   }
 
@@ -263,11 +263,16 @@ std::vector<TileChange> GameWindow::flag_tile(int row, int col) {
 
 
 	if (action == TileAction::Flag) {
+		if ( m_flag_count >= m_bomb_count ) {
+			//undo toggle;
+  		m_board.toggle_flag(col, row);
+			return {};
+		}
 		m_flag_count++;
 	} else {
 		m_flag_count--;
 	}
-	auto txt = Glib::ustring::compose("Flag Count: %1 | Bomb Count: %2", m_flag_count, m_bomb_count - m_flag_count);
+	auto txt = Glib::ustring::compose("Flags Placed: %1 | (Bombs/Flags) left: %2", m_flag_count, m_bomb_count - m_flag_count);
 	m_game_info.set_text(txt);
 
   return {{row, col, action}};
