@@ -1,6 +1,6 @@
 // for std::uint8_t
 #include <cstdint>
-constexpr std::uint8_t board_size = 10;
+constexpr std::uint8_t GRID_SIZE = 10;
 
 class Tile {
 	public:
@@ -13,7 +13,7 @@ class Tile {
 
 class Board {
 	private:
-		Tile tiles[board_size][board_size] = {0};
+		Tile tiles[GRID_SIZE][GRID_SIZE] = {0};
 		void update_tile_values(std::uint8_t x, std::uint8_t y);
 		void uncover_surrounding(std::uint8_t x, std::uint8_t y);
 		bool is_empty(std::uint8_t x, std::uint8_t y);
